@@ -179,11 +179,16 @@ function unique(path: Path) {
   }
 }
 
+function matchNumber(id: string) {
+  return /^\d/.test(id)
+}
+
 function id(input: Element): Node | null {
   const elementId = input.getAttribute('id')
   if (elementId && config.idName(elementId)) {
     return {
-      name: '#' + cssesc(elementId, {isIdentifier: true}),
+      name: matchNumber(elementId) ? `[id="${elementId}"]`
+        : `#${cssesc(elementId, {isIdentifier: true})}`,
       penalty: 0,
     }
   }
@@ -195,7 +200,8 @@ function classNames(input: Element): Node[] {
     .filter(config.className)
 
   return names.map((name): Node => ({
-    name: '.' + cssesc(name, {isIdentifier: true}),
+    name: matchNumber(name) ? `[class="${name}"]`
+      : `.${cssesc(name, {isIdentifier: true})}`,
     penalty: 1
   }))
 }
